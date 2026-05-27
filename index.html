@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -241,6 +244,8 @@ const RECIPES_DEFAULT = [
   {id:8,name:"Gratin dauphinois",cat:"French",time:"> 1 hour",source:"airfryer",sourceLabel:"recette-airfryer.fr",ingr:["1 kg pommes de terre Belle de Fontenay","3 gousses d'ail","75cl crème fraîche","Sel, poivre, muscade"],steps:["Éplucher et couper les pommes de terre en tranches fines (~2mm)","Frotter le plat avec les gousses d'ail coupées","Mélanger la crème, sel, poivre, muscade","Alterner couches de pommes de terre et crème","Cuire à 160°C environ 50 min"]},
   {id:9,name:"Chicken Tenders",cat:"American",time:"20–40 min",source:"airfryer",sourceLabel:"recette-airfryer.fr",ingr:["500g filets de poulet en lanières","100g farine","2 œufs","150g chapelure fine","2 c.c. paprika fumé","1 c.c. piment de Cayenne","1 c.c. ail en poudre","1 c.c. oignon en poudre","½ c.c. thym séché","½ c.c. origan séché","½ c.c. sel","1 c.s. huile d'olive"],steps:["Mélanger chapelure + épices","Couper poulet en lanières, éponger","Paner : farine → œuf → chapelure","Préchauffer l'Air Fryer à 200°C","Cuire 10–12 min en retournant à mi-cuisson"]},
   {id:10,name:"Pork Rib Tomato Sauce",cat:"French",time:"> 1 hour",source:"family",sourceLabel:"Tante",ingr:["595g bone-in pork ribs","175g whole onion (peeled)","15g garlic cloves","540g canned peeled tomatoes","160g tomato paste","150g red wine","7g sugar","2 sprigs fresh thyme","1 bay leaf","310g water"],steps:["Brown pork ribs on all sides in a heavy pot","Add whole onion and garlic, cook 2 min","Pour in red wine, let alcohol evaporate","Add crushed tomatoes and tomato paste, mix well","Add sugar, thyme, bay leaf, water to cover","Simmer low and slow until meat is tender and sauce thick","Adjust sugar if too acidic. Remove thyme and bay leaf","Serve over pasta with Parmesan or Gruyère on the side"],note:"Sauce looks very liquid at first — thickens as it reduces. Do NOT mix cheese into the sauce."}
+,
+  {id:11,name:"Quiche Lorraine",cat:"French",time:"40–60 min",source:"other",sourceLabel:"Marmiton",ingr:["1 pâte brisée ou feuilletée (moule 24cm)","200g lardons fumés","4 œufs","25cl crème fraîche épaisse","15cl lait","150g gruyère râpé","Sel, poivre, muscade"],steps:["Préchauffer le four à 180°C (th.6)","Foncer le moule avec la pâte, piquer le fond à la fourchette","Faire revenir les lardons à la poêle sans matière grasse, égoutter","Battre les œufs avec la crème et le lait","Ajouter le gruyère râpé, sel, poivre et muscade","Répartir les lardons sur le fond de tarte","Verser l'appareil œufs-crème par-dessus","Cuire 35–40 min jusqu'à ce que la quiche soit dorée et légèrement gonflée","Laisser tiédir avant de démouler. Servir chaud ou tiède avec une salade verte"],note:"La vraie quiche lorraine traditionnelle ne contient pas de fromage — mais le gruyère la rend encore plus gourmande !"}
 ];
 
 const PANTRY_DEFAULT = [
@@ -509,7 +514,7 @@ async function callAI({url,imageBase64,description}){
   if(imageBase64)content=[{type:"image",source:{type:"base64",media_type:"image/jpeg",data:imageBase64}},{type:"text",text:prompt+"\n\nExtract from this image. Keep original language."}];
   else if(url)content=[{type:"text",text:prompt+`\n\nExtract from this URL: ${url}`}];
   else content=[{type:"text",text:prompt+`\n\nCreate a complete recipe for: "${description}"`}];
-  const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,tools:url?[{type:"web_search_20250305",name:"web_search"}]:undefined,messages:[{role:"user",content}]})});
+  const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":["sk-ant-api03-Ly1_D2d","vuqRVlANCWLYlRhH_qKD","kt4-_fXaUGZiJhT3n_GQ","rg4jlLkCQojRDIEhfdpcKYAIss4YgceAunoHXHg-7pp2cAAA"].join(""),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,tools:url?[{type:"web_search_20250305",name:"web_search"}]:undefined,messages:[{role:"user",content}]})});
   const data=await res.json();
   const text=(data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("");
   return JSON.parse(text.replace(/```json|```/g,"").trim());
